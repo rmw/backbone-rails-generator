@@ -9,3 +9,6 @@ Currently, it is specific to my needs.  It assumes you are using:
 * following the backbone directory set up from CloudEdit: http://www.jamesyu.org/2011/01/27/cloudedit-a-backbone-js-tutorial-by-example
 * jasmine
 * sinon.js 
+
+To use:
+copy or sym link the backbone directory into the lib/generators directory in Rails.root

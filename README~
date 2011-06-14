@@ -1,0 +1,11 @@
+This is a first attempt at creating a backbone.js rails generator.
+
+Currently, it is specific to my needs.  It assumes you are using:
+* backbone.js
+* rails 3
+* haml
+* hamljs
+* jammit with JST packaging for templates
+* following the backbone directory set up from CloudEdit: http://www.jamesyu.org/2011/01/27/cloudedit-a-backbone-js-tutorial-by-example
+* jasmine
+* sinon.js 
