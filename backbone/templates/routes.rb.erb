@@ -1,0 +1,18 @@
+scope '/<%= class_name.downcase.pluralize %>' do
+    constraints :format => :json do
+      controller :<%= class_name.downcase.pluralize %> do
+        match '' => :index, :via => :get
+        match '' => :create, :via => :post
+        constraints :id => /\d+/ do
+          match ':id' => :show, :via => :get
+          match ':id' => :update, :via => :put
+          match ':id' => :destroy, :via => :delete
+        end
+      end
+    end
+    constraints :format => :html do
+      match '' => redirect("/#<%= class_name.downcase.pluralize %>")
+      match 'new' => redirect("/#<%= class_name.downcase.pluralize %>/new")
+      match ':id/edit' => redirect { |params| "/#<%= class_name.downcase.pluralize %>/#{params[:id]}/edit" }
+    end
+  end

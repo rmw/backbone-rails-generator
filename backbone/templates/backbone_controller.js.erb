@@ -1,0 +1,54 @@
+App.Controllers.<%= controller_name %>Controller = Backbone.Controller.extend({
+    helper : App.ViewHelpers.<%= controller_name.downcase %>,
+    routes: App.ViewHelpers.<%= controller_name.downcase %>.getRoutes(["edit", "index", "new"], ["edit", "index", "new<%= controller_name.singularize %>"]),
+    edit: function(id) {
+        var self = this;
+        this._list({
+            success: function() {
+                self.helper.find(id).find(self.helper.css.toClass(self.helper.links.edit)).trigger('click');
+            },
+            error : function() {
+               new App.Views.Error({ message: 'Could not find that <%= controller_name.downcase %>.'});
+            }
+        });
+    },
+
+    index: function() {
+        this._list();
+    },
+
+    new<%= controller_name.singularize %> : function() {
+        var self = this;
+        this._list({
+            success: function() {
+                $(self.helper.css.toClass(self.helper.links['new'])).trigger('click');
+            },
+            error : function() {
+               new App.Views.Error({ message: '<%= controller_name.singularize %> could not be created.'});
+            }
+        });
+    },
+    _list : function(callbacks) {
+        callbacks = callbacks || {};
+        var <%= controller_name.downcase %> = new App.Collections.<%= controller_name %>();
+        <%= controller_name.downcase %>.fetch({
+            success: function() {
+                new App.Views.<%= controller_name %>.Index({ collection: <%= controller_name.downcase %> });
+                 //now add the subview
+                 _.each(<%= controller_name.downcase %>.models, function(item) {
+                    new App.Views.<%= controller_name %>.Show({ model: item }).render();
+                 });
+                if(typeof(callbacks.success) != "undefined") {
+                    callbacks.success();
+                }
+            },
+            error: function() {
+               if(typeof(callbacks.error) != "undefined") {
+                    callbacks.error();
+               }else {
+                   new App.Views.Error({ message: "Error loading <%= controller_name.downcase %>." });
+               }
+           }
+        });
+    }
+});

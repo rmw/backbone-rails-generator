@@ -1,0 +1,10 @@
+App.ViewHelpers.<%= controller_name.downcase %> = new Backbone.ViewHelper( {
+   prefix : '<%= controller_name.singularize.downcase %>',
+   prefixExempt : {
+       css: ['list']
+   },
+   css : {
+       list : '<%= controller_name.downcase %>'
+   },
+   header : null
+});

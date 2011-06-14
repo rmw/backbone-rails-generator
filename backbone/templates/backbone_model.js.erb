@@ -1,0 +1,8 @@
+var <%= controller_name.singularize %> = Backbone.Model.extend({
+    url: function() {
+        var base = '<%= controller_name.downcase %>';
+        if(!this.isNew())
+            base = base + (base.charAt(base.length - 1) == '/' ? '' : '/') + this.id +'.json';
+        return base; 
+    }
+});

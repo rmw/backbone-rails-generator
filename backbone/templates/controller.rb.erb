@@ -1,0 +1,26 @@
+class <%= controller_name %>Controller < ApplicationController
+  def index
+    render :json => <%= controller_name %>.all
+  end
+
+  def show
+    render :json => <%= controller_name %>.find(params[:id])
+  end
+
+  def create
+    <%= controller_name.downcase.pluralize %> = <%= controller_name %>.create! params
+    render :json => <%= controller_name.downcase.pluralize %>
+  end
+
+  def update
+    <%= controller_name.downcase.pluralize %> =  <%= controller_name %>.find(params[:id])
+    <%= controller_name.downcase.pluralize %>.update_attributes! params
+    render :json => <%= controller_name.downcase.pluralize %>
+  end
+
+  def destroy
+    <%= controller_name.downcase.pluralize %> =  <%= controller_name %>.find(params[:id])
+    <%= controller_name.downcase.pluralize %>.destroy
+    render :json => <%= controller_name.downcase.pluralize %>
+  end
+end

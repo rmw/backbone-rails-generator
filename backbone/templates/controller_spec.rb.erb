@@ -1,0 +1,128 @@
+require 'spec_helper'
+require 'json_spec_helper'
+
+describe <%= controller_name %>Controller do
+  include JsonHelperMethods
+
+  before do
+      @request.env["devise.mapping"] =  Devise.mappings[:user]
+      @user = Factory(:user)
+      @person = Factory(:person)
+      controller.stub_chain(:current_user,:person).and_return(@person)
+      sign_in @user
+  end
+
+  describe "actions with existing <%= controller_name.singularize.downcase %>" do
+    let(:<%= controller_name.singularize.downcase %>) { Factory(:<%= controller_name.singularize.downcase %>) }
+
+    describe "GET index" do
+      before do
+        @person.stub(:<%= controller_name.downcase %>).and_return([<%= controller_name.singularize.downcase %>])
+        get :index, :<%= controller_name.downcase %> => [<%= controller_name.singularize.downcase %>]
+      end
+      it_should_behave_like "successfully returns json"
+      it "returns list of <%= controller_name.downcase %>" do
+        compare_response_json_array(response, [<%= controller_name.singularize.downcase %>])
+      end
+    end
+
+    context "working on a single <%= controller_name.singularize.downcase %>" do
+      before do
+        @person.stub_chain(:<%= controller_name.downcase %>, :find).and_return(<%= controller_name.singularize.downcase %>)
+      end
+      describe "PUT update" do
+
+        context "when the <%= controller_name.singularize.downcase %> updates successfully" do
+          before do
+            <%= controller_name.singularize.downcase %>.name = "test 1-edited"
+            <%= controller_name.singularize.downcase %>.stub(:save).and_return(true)
+            <%= controller_name.singularize.downcase %>.stub(:update_attributes).and_return(true)
+            put :update, :id => <%= controller_name.singularize.downcase %>.id, :<%= controller_name.singularize.downcase %> => <%= controller_name.singularize.downcase %>
+          end
+          it_should_behave_like "successfully returns json"
+          it "returns a json <%= controller_name.singularize.downcase %>" do
+            compare_response_json(response, <%= controller_name.singularize.downcase %>)
+          end
+        end
+
+        context "when the <%= controller_name.singularize.downcase %> fails to save" do
+          before do
+            <%= controller_name.singularize.downcase %>.stub(:save).and_return(false)
+            <%= controller_name.singularize.downcase %>.stub(:update_attributes).and_return(false)
+            put :update, :id => <%= controller_name.singularize.downcase %>.id, :<%= controller_name.singularize.downcase %> => <%= controller_name.singularize.downcase %>
+          end
+          it "returns empty response body" do
+            pending
+            #what do we do on failure to save?
+            response.response_code.should == 200
+            response.body.should == ""
+            #TODO: seems like there should be more here
+          end
+        end
+      end
+
+      describe "DELETE destroy" do
+
+        context "when the <%= controller_name.singularize.downcase %> deletes successfully" do
+          before do
+            <%= controller_name.singularize.downcase %>.stub(:destroy).and_return(true)
+            delete :destroy, :id => <%= controller_name.singularize.downcase %>.id, :<%= controller_name.singularize.downcase %> => <%= controller_name.singularize.downcase %>
+          end
+          it_should_behave_like "successfully returns json"
+          it "returns a json <%= controller_name.singularize.downcase %>" do
+            compare_response_json(response, <%= controller_name.singularize.downcase %>)
+          end
+        end
+
+        context "when the <%= controller_name.singularize.downcase %> fails to delete" do
+          before do
+            <%= controller_name.singularize.downcase %>.stub(:destroy).and_return(false)
+            <%= controller_name.singularize.downcase %>.stub(:errors).and_return(:errors => { :anything => "anything" })
+            delete :destroy, :id => <%= controller_name.singularize.downcase %>.id, :<%= controller_name.singularize.downcase %> => <%= controller_name.singularize.downcase %>
+          end
+          it "returns empty response body" do
+            pending
+            #what do we do on failure to save?
+            response.response_code.should == 200
+            response.body.should == ""
+            #TODO: seems like there should be more here
+          end
+        end
+      end
+    end
+  end
+
+  describe "POST create" do
+    #pending
+    let(:<%= controller_name.singularize.downcase %>) { Factory(:<%= controller_name.singularize.downcase %>) }
+      #mock_model(<%= controller_name.singularize %>).as_null_object }
+
+    before do
+      @person.stub_chain(:<%= controller_name.downcase %>, :create!).and_return(<%= controller_name.singularize.downcase %>)
+    end
+
+    context "when the <%= controller_name.singularize.downcase %> saves successfully" do
+      before do
+        post :create, { "name" => "test 1" }
+      end
+      it_should_behave_like "successfully returns json"
+      it "returns a json <%= controller_name.singularize.downcase %>" do
+        compare_response_hash(response, <%= controller_name.singularize.downcase %>)
+      end
+    end
+
+    context "when the <%= controller_name.singularize.downcase %> fails to save" do
+      pending
+      before do
+        <%= controller_name.singularize.downcase %>.stub(:save).and_return(false)
+        <%= controller_name.singularize.downcase %>.stub(:errors).and_return(:errors => { :anything => "anything" })
+      end
+      it "renders the new template" do
+        pending
+        post :create
+        response.should render_template :new
+      end
+    end
+  end
+
+end

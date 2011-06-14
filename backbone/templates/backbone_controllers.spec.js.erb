@@ -1,0 +1,196 @@
+var controller = new App.Controllers.<%= controller_name %>Controller();
+
+describe("<%= controller_name %> Controller", function() {
+    beforeEach(function() {
+        this.viewHelper = App.ViewHelpers.<%= controller_name.downcase %>;
+    });
+
+    describe("routes", function() {
+
+        beforeEach(function() {
+           this.routeSpy = sinon.spy();
+        });
+
+        afterEach(function() {
+           window.location.hash = this.viewHelper.url.index();
+        });
+
+        it("fires the index route", function() {
+           this.routeTest(controller, "index", this.routeSpy);
+        });
+
+        it("fires the edit route", function() {
+           this.routeTest(controller, "edit", this.routeSpy, "edit", "1");
+        });
+
+      it("fires the new route", function() {
+           this.routeTest(controller, "new<%= controller_name.singularize %>", this.routeSpy, "new");
+      });
+    });
+
+    describe("actions", function() {
+        beforeEach(function() {
+          this.controller = new App.Controllers.<%= controller_name %>Controller();
+          this.collection = new Backbone.Collection();
+          this.<%= controller_name.downcase %>CollectionStub = sinon.stub(App.Collections, "<%= controller_name %>")
+            .returns(this.collection);
+        });
+
+        afterEach(function() {
+           this.<%= controller_name.downcase %>CollectionStub.restore();
+        });
+
+        describe("index", function() {
+          describe("fetching the <%= controller_name.downcase %>", function() {
+
+            describe("success", function() {
+               beforeEach(function() {
+                  //add some models to the collection
+                 this.collection.add(this.fixtures.<%= controller_name %>.valid);
+                 this.fetchStub = sinon.stub(this.collection, "fetch").yieldsTo("success");
+                 this.<%= controller_name.downcase %>IndexView = sinon.stub(App.Views.<%= controller_name %>, "Index")
+                   .returns(new Backbone.View());
+                 this.<%= controller_name.downcase %>ShowView = sinon.stub(App.Views.<%= controller_name %>, "Show")
+                   .returns(new Backbone.View());
+                 this.controller.index();
+               });
+
+               afterEach(function() {
+                 this.<%= controller_name.downcase %>IndexView.restore();
+                 this.<%= controller_name.downcase %>ShowView.restore();
+                 this.fetchStub.restore();
+               });
+
+               it("fetches the <%= controller_name.downcase %> from the server", function() {
+                  expect_called_once_with(this.fetchStub);
+               });
+
+               it("creates a <%= controller_name %> collection", function() {
+                  expect(this.<%= controller_name.downcase %>CollectionStub)
+                   .toHaveBeenCalledOnce();
+                  expect(this.<%= controller_name.downcase %>CollectionStub)
+                   .toHaveBeenCalledWithExactly();
+               });
+
+              it("creates a <%= controller_name %> index view", function() {
+                  console.log("pending");
+                  /*expect_called_once_with(this.<%= controller_name.downcase %>IndexView({
+                      collection : this.collection
+                   }));*/
+               });
+
+              it("creates a <%= controller_name.singularize %> show view for each item", function() {
+                  expect(this.<%= controller_name.downcase %>ShowView)
+                    .toHaveBeenCalled(this.collection.length);
+                  for(var i=0; i < this.collection.length; ++i) {
+                      expect(this.<%= controller_name.downcase %>ShowView)
+                        .toHaveBeenCalledWith({ model : this.collection.at(i) });
+                  };
+              });
+            });
+
+            describe("failure", function () {
+
+               beforeEach(function() {
+                 this.fetchStub = sinon.stub(this.collection, "fetch").yieldsTo("error");
+                 this.controller.index();
+               });
+
+               afterEach(function() {
+                 this.fetchStub.restore();
+               });
+
+               it("attempts to fetch the <%= controller_name.downcase %> from the server", function() {
+                  expect_called_once_with(this.fetchStub);
+               });
+
+               it("creates a <%= controller_name %> collection with 0 items", function() {
+                  expect(this.<%= controller_name.downcase %>CollectionStub)
+                   .toHaveBeenCalledOnce();
+                  expect(this.<%= controller_name.downcase %>CollectionStub)
+                   .toHaveBeenCalledWithExactly();
+               });
+
+               it_should_show_error('Error loading <%= controller_name.downcase %>.');
+            });
+          });
+        });
+
+        describe("edit", function() {
+            beforeEach(function() {
+                this.<%= controller_name.downcase %>ListStub = sinon.stub(this.controller, "_list");
+               });
+
+               afterEach(function() {
+                 this.<%= controller_name.downcase %>ListStub.restore();
+               });
+
+                describe("successfully gets <%= controller_name.singularize.downcase %>", function() {
+                    beforeEach(function() {
+                        var id = 1;
+                                                
+                        loadFixtures("<%= controller_name.singularize.downcase %>.fixture1.html");
+                        this.fixture = this.viewHelper.find(id);
+                        this.editLink = this.fixture.find(this.viewHelper.css.toClass(this.viewHelper.links.edit));
+                        spyOnEvent(this.editLink, 'click');
+
+                        this.<%= controller_name.downcase %>ListStub.yieldsTo("success");
+                        
+                        this.controller.edit(id);
+
+                    });
+                    
+                   it("triggers click on <%= controller_name.singularize.downcase %>", function() {
+                      expect('click').toHaveBeenTriggeredOn(this.editLink);
+                   });
+                });
+
+                describe("fails to get <%= controller_name.singularize.downcase %>", function() {
+                    beforeEach(function() {
+                       this.<%= controller_name.downcase %>ListStub.yieldsTo("error");
+                       this.controller.edit(1);
+                    });
+
+                    it_should_show_error('Could not find that <%= controller_name.singularize.downcase %>.');
+                });
+        });
+
+        describe("new<%= controller_name.singularize %>", function() {
+            beforeEach(function() {
+                this.<%= controller_name.downcase %>ListStub = sinon.stub(this.controller, "_list");
+           });
+
+           afterEach(function() {
+             this.<%= controller_name.downcase %>ListStub.restore();
+           });
+
+            describe("successfully gets <%= controller_name.singularize.downcase %>", function() {
+                beforeEach(function() {
+                    loadFixtures("<%= controller_name.singularize.downcase %>.createnew.fixture.html");
+                    this.fixture = $(this.viewHelper.css.toClass(this.viewHelper.links['new']));
+                    spyOnEvent(this.fixture, 'click');
+
+                    this.<%= controller_name.downcase %>ListStub.yieldsTo("success");
+
+                    this.controller.new<%= controller_name.singularize %>();
+
+                });
+
+               it("triggers click on new", function() {
+                  expect('click').toHaveBeenTriggeredOn(this.fixture);
+               });
+            });
+
+            describe("fails to get <%= controller_name.singularize.downcase %>", function() {
+                beforeEach(function() {
+                   this.<%= controller_name.downcase %>ListStub.yieldsTo("error");
+                   this.controller.new<%= controller_name.singularize %>();
+                });
+
+                it_should_show_error('<%= controller_name.singularize %> could not be created.');
+            });
+        });
+
+    });
+
+});

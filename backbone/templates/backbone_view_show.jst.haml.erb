@@ -1,0 +1,7 @@
+- var contact = model;
+- var helper = App.ViewHelpers.contacts;
+%span &= contact.get('name')
+%div.contact_links
+  %a(href='#' contact-id=contact.id class=helper.links.edit)Edit
+  |
+  %a(href='#' contact-id=contact.id class=helper.links.destroy)Delete

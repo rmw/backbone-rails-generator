@@ -1,0 +1,32 @@
+App.Views.<%= controller_name %>.Index = Backbone.View.extend({
+  helper : App.ViewHelpers.<%= controller_name.downcase %>,
+  className: App.ViewHelpers.<%= controller_name.downcase %>.css.index,
+  events: App.ViewHelpers.<%= controller_name.downcase %>.getLinkEvents(["click"], ["new"], ["newContact"]),
+   initialize: function() {
+     this.render();
+   },
+   render: function() {
+     $(this.el).html(JST.<%= controller_name.downcase %>_collection({ collection: this.collection }));
+     $('#app_content').html(this.el);
+     if(!this._headerRendered) {
+        if(this.helper.header == null)
+            this.helper.header = new App.Views.SubHeader({ model : '<%= controller_name %>', className : '<%= controller_name.downcase %>' });
+        this.helper.header.render();
+        this._headerRendered = true;
+     }
+
+     this.delegateEvents();
+
+     return this;
+   },
+   newContact : function(e) {
+     e.preventDefault();
+     e.stopPropagation();
+     var self = this;
+     var view = new App.Views.<%= controller_name %>.Edit({ model: new Contact() });
+     var el = $(view.render().el);
+
+     Backbone.history.saveLocation(self.helper.url['new']());
+   },
+   _headerRendered : false
+});

@@ -1,0 +1,12 @@
+%form(class=App.ViewHelpers.contacts.css.form)
+  %label(for='name')
+    Name
+  - var valText = model.isNew() ? '' : model.get('name');
+  %input(type='text' name='name' value=valText)
+  - var submitText = model.isNew() ? 'Create' : 'Save';
+  %div.buttons
+    %button(type='submit')
+      =submitText
+    - var lnkClass = App.ViewHelpers.contacts.css.form + "_cancel";
+    %button(class=lnkClass)
+      Cancel

@@ -1,0 +1,7 @@
+App.Collections.<%= controller_name %> = Backbone.Collection.extend({
+    model: <%= controller_name.singularize %>,
+    url: '/<%= controller_name.downcase %>.json',
+    comparator : function(<%= controller_name.singularize.downcase %>) {
+        return <%= controller_name.singularize.downcase %>.get('name'); //alphabetical by name
+    }
+});

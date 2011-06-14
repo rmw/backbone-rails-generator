@@ -1,0 +1,28 @@
+describe('<%= controller_name.singularize %> model', function() {
+    beforeEach(function() {
+       this.<%= controller_name.singularize.downcase %> =  new <%= controller_name.singularize %>({ name : "Rebecca" });
+    });
+
+    describe('when instantiated', function() {
+       it('should exhibit attributes', function() {
+          expect(this.<%= controller_name.singularize.downcase %>.get('name'))
+           .toEqual('Rebecca');
+       });
+    });
+
+    describe('url', function() {
+
+       describe('when no id is set', function() {
+          it('should return <%= controller_name.downcase %> url', function() {
+              expect(this.<%= controller_name.singularize.downcase %>.url()).toEqual("<%= controller_name.downcase %>");
+          })
+       });
+
+       describe('when id is set', function() {
+          it('should return the url and id', function() {
+             this.<%= controller_name.singularize.downcase %>.id = 1;
+          });
+       });
+    });
+
+});

@@ -1,0 +1,97 @@
+function describe_<%= controller_name.singularize.downcase %>_edit_form(context) {
+        describe("rendering a form", function() {
+          var form;
+          beforeEach(function() {
+             this.view.render();  //TODO: this really shouldn't rely on this
+             form = this.el.find('form');
+          });
+
+          it('should have a form', function() {
+             expect(form).toExist();
+          });
+
+          it("should have a <%= controller_name.singularize.downcase %>_form class", function() {
+             expect(form).toHaveClass(this.helper.css.form);
+          });
+
+          it("should have a name label", function() {
+             var label = form.children('label');
+              expect(label).toExist();
+             expect(label).toHaveAttr("for", 'name');
+             expect(label).toHaveText("Name");
+          });
+
+          it("should have a name input", function() {
+             var input = form.children('input');
+              expect(input).toExist();
+              expect(input).toHaveAttr("name", "name");
+              expect(input).toBeATextInput();
+              if(this.fixture)
+                expect(input).toHaveAttr("value", this.fixture.get('name')); 
+          });
+
+          it("should have a submit button", function() {
+             var button = form.find('button[type=submit]');
+              expect(button).toExist();
+              var txt = this.fixture ? "Save" : "Create"; //TODO: do a better way
+              expect(button).toHaveText(txt);
+          });
+
+        describe("cancel link", function() {
+              var lnk;
+              beforeEach(function() {
+                  var lnkClass = "button." + this.helper.css.form + "_cancel";
+                  lnk = form.find(lnkClass);
+              });
+
+              it("should have a cancel link", function() {
+                  expect(lnk).toExist();
+                  expect(lnk).toHaveText("Cancel");
+              });
+
+              it("cancel link should close form", function() {
+                  spyOnEvent(lnk, 'click');
+                  lnk.click();
+                  expect('click').toHaveBeenTriggeredOn(lnk);
+                  expect(this.el).not.toBeInDOM();  //TODO: this doesn't really work
+              });
+          });
+       });
+}
+
+function describe_<%= controller_name.singularize.downcase %>_list_instantiation(className, tagName) {
+    tagName = tagName || 'DIV';
+    className = className || '';
+    describe("instantiation", function() {
+           it("should create a div element", function() {
+              expect(this.view.el.nodeName).toEqual(tagName);
+           });
+           it("should have a class on <%= controller_name.singularize.downcase %>_list", function() {
+              expect(this.el).toHaveClass(className);
+           });
+       });
+}
+
+function describe_<%= controller_name.singularize.downcase %>_edit_delete_links() {
+    describe("edit and delete links", function() {
+        it("should have an edit link", function() {
+              var aClass = "a." + this.helper.links.edit;
+              var a = this.el.find(aClass);
+              expect(a).toExist();
+              expect(a).toHaveAttr(this.helper.id.attribute, this.fixture.get('id'));
+              expect(a).toHaveText("Edit");
+              expect(a).toBeShown();
+              /*spyOnEvent(this.view, 'edit');
+              a.click();
+              expect(this.view.edit).toHaveBeenTriggeredOn(a);*/
+          });
+          it("should have a delete link", function() {
+              var aClass = "a." + this.helper.links.destroy;
+              this.lnk = this.el.find(aClass);
+              expect(this.lnk).toExist();
+              expect(this.lnk).toHaveAttr(this.helper.id.attribute, this.fixture.get('id'));
+              expect(this.lnk).toHaveText("Delete");
+              expect(this.lnk).toBeShown();
+          });
+    });
+}

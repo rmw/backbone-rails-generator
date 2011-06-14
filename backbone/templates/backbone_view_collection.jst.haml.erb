@@ -1,0 +1,13 @@
+- if(collection.models.length>0){
+- var helper = App.ViewHelpers.contacts;
+%div#app_sub_header
+  %a(href='#new' class=helper.links.new)Add New Contact
+  %div(class=helper.css.new)
+%ul(class=App.ViewHelpers.contacts.css.list)
+  - $.each(collection.models, function(index, val) {
+  - var contact = val;
+  - var htmlId = helper.id.tag(contact.id);
+  - var cycle = index % 2 ? 'even' : 'odd'
+  %li.contact(id=htmlId class=cycle)
+  - });
+- }

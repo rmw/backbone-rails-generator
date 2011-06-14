@@ -1,0 +1,74 @@
+describe('<%= controller_name.downcase %> collection', function() {
+    beforeEach(function() {
+       //stub out the model constructor
+       this.<%= controller_name.singularize.downcase %>Stub = sinon.stub(window, "<%= controller_name.singularize %>");
+       //create collection
+       this.<%= controller_name.downcase %> = new App.Collections.<%= controller_name %>();
+       //create some temp <%= controller_name.downcase %>
+       this.<%= controller_name.singularize.downcase %>1 = new Backbone.Model({ id: 2, name : "Abel" });;
+       this.<%= controller_name.singularize.downcase %>2 = new Backbone.Model({ id: 3, name : "Brad" });;
+       this.<%= controller_name.singularize.downcase %>3 = new Backbone.Model({ id: 4, name : "Cathleen" });;
+       this.<%= controller_name.singularize.downcase %>4 = new Backbone.Model({ id: 5, name : "David" });;
+   });
+
+   afterEach(function() {
+       this.<%= controller_name.singularize.downcase %>Stub.restore();
+   });
+
+    describe('when instantiated with model literal', function() {
+       beforeEach(function() {
+           //need to use Backbone.Model here
+           this.model = new Backbone.Model({ id : 1, name : "Rebecca" });
+           this.<%= controller_name.singularize.downcase %>Stub.returns(this.model);
+           this.<%= controller_name.downcase %>.add({ id : 1, name : "Rebecca" });
+       });
+
+       afterEach(function() {
+           this.<%= controller_name.singularize.downcase %>Stub.restore();
+       });
+
+       it("should add a model", function() {
+          expect(this.<%= controller_name.downcase %>.length).toEqual(1);
+       });
+
+       it("should find a model by id", function() {
+          expect(this.<%= controller_name.downcase %>.get(1).get('id')).toEqual(this.model.id);
+       });
+
+    });
+
+    describe('when adding models', function() {
+          it("should order model by name", function() {
+            this.<%= controller_name.downcase %>.remove(this.model);
+            this.<%= controller_name.downcase %>.add([this.<%= controller_name.singularize.downcase %>2, this.<%= controller_name.singularize.downcase %>4 , this.<%= controller_name.singularize.downcase %>3, this.<%= controller_name.singularize.downcase %>1]);
+            expect(this.<%= controller_name.downcase %>.at(0)).toBe(this.<%= controller_name.singularize.downcase %>1);
+            expect(this.<%= controller_name.downcase %>.at(1)).toBe(this.<%= controller_name.singularize.downcase %>2);
+            expect(this.<%= controller_name.downcase %>.at(2)).toBe(this.<%= controller_name.singularize.downcase %>3);
+            expect(this.<%= controller_name.downcase %>.at(3)).toBe(this.<%= controller_name.singularize.downcase %>4);
+        });
+    });
+
+    describe('fetching <%= controller_name.downcase %> from the server', function() {
+       beforeEach(function() {
+           this.fixture = this.fixtures.<%= controller_name %>.valid;
+           this.server = sinon.fakeServer.create();
+           this.server.respondWith(
+                "GET",
+                "/<%= controller_name.downcase %>.json",
+                 this.validResponse(this.fixture)
+           );
+       });
+       afterEach(function() {
+          this.server.restore(); 
+       });
+
+       it("should make the correct request", function() {
+           this.<%= controller_name.downcase %>.fetch();
+           expect(this.server.requests.length).toEqual(1);
+           expect(this.server.requests[0].method).toEqual("GET");
+           expect(this.server.requests[0].url).toEqual("/<%= controller_name.downcase %>.json");
+       });
+
+    });
+
+});

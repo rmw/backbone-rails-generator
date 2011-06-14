@@ -1,0 +1,76 @@
+App.Views.<%= controller_name %>.Show = Backbone.View.extend({
+    helper : App.ViewHelpers.<%= controller_name.downcase %>,
+    className: App.ViewHelpers.<%= controller_name.downcase %>.css.show,
+    events: App.ViewHelpers.<%= controller_name.downcase %>.getLinkEvents(["click", "click"], ["edit", "destroy"], ["edit", "destroy"]),
+    initialize: function() {
+       _.bindAll(this, 'render');
+       this.model.bind('change', this.render);
+       this.render();
+    },
+    render: function() {
+        $(this.el).html(JST.<%= controller_name.singularize.downcase %>_show({ model: this.model }));
+        this._parent().html(this.el);
+        this._parent().attr(this.helper.id.attribute, this.model.id);
+        this._parent().removeClass('open')
+        
+        this.delegateEvents();
+        return this;
+    },
+   edit : function(e) {
+     e.preventDefault();
+     e.stopPropagation();
+     var self = this;
+     var <%= controller_name.singularize.downcase %> = this._get<%= controller_name.singularize %>(e);
+     <%= controller_name.singularize.downcase %>.fetch({
+       success: function(model, resp) {
+           self.model = model;
+           //hide show view
+           self._parent().children(self.helper.css.toClass(self.helper.css.show)).hide();
+           self._parent().addClass('open')
+           var view = new App.Views.<%= controller_name %>.Edit({ model: model });
+           $(view.render().el).appendTo(self._parent());
+
+           Backbone.history.saveLocation(self.helper.url.edit(model.id));
+       },
+       error: function() {
+           new App.Views.Error({ message: 'Could not find that <%= controller_name.singularize.downcase %>.'});
+       }
+     });
+   },
+   destroy : function(e) {
+     e.preventDefault();
+     var self = this;
+     var <%= controller_name.singularize.downcase %> = this._get<%= controller_name.singularize %>(e);
+     var confirm = $('<div />').text('Are you sure you want to delete this <%= controller_name.singularize.downcase %>?');
+     confirm.dialog({
+			modal: true,
+			buttons: {
+				"Delete": function() {
+                     <%= controller_name.singularize.downcase %>.destroy({
+                         success: function(model, resp) {
+                           self.model = model;
+                           new App.Views.Notice({message: '<%= controller_name.singularize %> deleted.' });
+                           self.model = model;
+                           self._parent().remove();
+                       },
+                       error: function() {
+                           new App.Views.Error({ message: 'Error deleting <%= controller_name.singularize.downcase %>.'});
+                       }
+                     });
+					 $( this ).dialog( "destroy" );
+				},
+				Cancel: function() {
+					$( this ).dialog( "destroy" );
+				}
+			}
+		});
+    },
+   _parent : function() {
+       return this.helper.find(this.model.id);
+   },
+   _get<%= controller_name.singularize %> : function(e) {
+     var modelId = this.helper.getId(e.target);
+     var <%= controller_name.singularize.downcase %> = new Contact({ id: modelId });
+     return <%= controller_name.singularize.downcase %>;
+   }
+});

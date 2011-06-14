@@ -1,0 +1,86 @@
+App.Views.<%= controller_name %>.Edit = Backbone.View.extend({
+  helper : App.ViewHelpers.<%= controller_name.downcase %>,
+  className: App.ViewHelpers.<%= controller_name.downcase %>.css.edit,
+  events: {
+     "submit form.<%= controller_name.singularize.downcase %>_form" : "save",
+     "click .<%= controller_name.singularize.downcase %>_form_cancel" : "cancel"
+   },
+   initialize: function() {
+       _.bindAll(this, 'render');
+       //this.model.bind('change', this.render);
+       this.render();
+   },
+   cancel : function(e) {
+     e.preventDefault();
+     if(this.model.isNew()) this._destroyDialog();
+     this._close(this.model);
+   },
+   save : function(e) {
+     e.preventDefault();
+     var self = this;
+     var isNew = this.model.isNew();
+     var msg = isNew ? 'Successfully created!' : 'Saved';
+
+     this.model.save(
+        { name: this.$('[name=name]').val() },
+        {
+            success: function(model, resp) {
+                new App.Views.Notice({message: msg });
+
+                if(isNew) self._destroyDialog();
+                self._close(model);
+            },
+            error : function() {
+                if(isNew) self._destroyDialog();
+                new App.Views.Error("Error");
+            }
+        }
+     );
+   },
+   render: function() {
+       $(this.el).html(JST.<%= controller_name.singularize.downcase %>_form({ model: this.model }));
+       Cufon.replace($(this.el).find('button'), { fontFamily : 'Bradbury Sans Light' });
+       var isNew = this.model.isNew();
+       var self = this;
+       if(isNew) {
+           this._toggleCreateLink(false);
+           $(this.el).dialog( {
+               modal : true,
+               title : 'add a new <%= controller_name.singularize.downcase %>',
+               dialogClass : '<%= controller_name.singularize.downcase %>_add',
+               width: 575,
+               close : function() {
+                self._destroyDialog();
+                self._close();
+               }
+           });
+           Cufon.replace($(this.el).parent('.ui-dialog').find('.ui-dialog-title'), { fontFamily : 'Bradbury Sans Light' });
+       }else {
+           this._toggleCreateLink(true);
+       }
+
+       this.delegateEvents();
+
+       return this;
+   },
+   _close: function(model) {
+        this.model = model;
+        window.location.hash = this.helper.url.index();
+   },
+   _destroyDialog: function(model){
+        $(this.el).dialog('destroy');
+        $(this.el).remove();
+   },
+   _getNewDiv : function() { return $(this.helper.css.toClass(this.helper.css['new'])); },
+   _toggleCreateLink : function(showLink) {
+       var newLink = $(this.helper.css.toClass(this.helper.links['new']));
+       var newDiv = this._getNewDiv();
+       if(showLink) {
+           newLink.show();
+           newDiv.hide();
+       }else {
+           newLink.hide();
+           newDiv.show();
+       }
+   }
+});

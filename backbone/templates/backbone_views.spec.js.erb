@@ -1,0 +1,269 @@
+describe("<%= controller_name.downcase %> views", function() {
+    beforeEach(function() {
+       this.helper = App.ViewHelpers.<%= controller_name.downcase %>;
+       this.createLinkShown =  function() {
+            var lnk = this.el.find(this.helper.css.toClass(this.helper.links['new']));
+            expect(lnk).toBeShown();
+       };
+       this.createLinkNotShown =  function() {
+            var lnk = this.el.find(this.helper.css.toClass(this.helper.links['new']));
+            expect(lnk).toNotBeShown();
+       };
+       this.createDivShown = function() {
+             var div = this.el.find(this.helper.css.toClass(this.helper.css['new']));
+              expect(div).toBeShown();
+       };       
+       this.createDivNotShown = function() {
+             var div = this.el.find(this.helper.css.toClass(this.helper.css['new']));
+              expect(div).toNotBeShown();
+       };
+    });
+
+    describe("index", function() {
+       beforeEach(function() {
+          this.view = new App.Views.<%= controller_name %>.Index();
+          this.el = $(this.view.el);
+       });
+
+        describe_<%= controller_name.singularize.downcase %>_list_instantiation(App.ViewHelpers.<%= controller_name.downcase %>.css.index);
+
+       describe("rendering", function() {
+          beforeEach(function() {
+             this.view.collection = new Backbone.Collection();
+             var self = this;
+             _.each(this.fixtures.<%= controller_name %>.valid, function(val) {
+                self['<%= controller_name.singularize.downcase %>' + val.id] = new Backbone.Model(val);
+                self.view.collection.add(self['<%= controller_name.singularize.downcase %>' + val.id]);
+             });
+             this.view.render();
+          });
+
+          it("should show the create link", this.createLinkShown);
+
+          it("should hide the create div", this.createDivNotShown);
+
+          describe("the <%= controller_name.downcase %> list", function() {
+              beforeEach(function() {
+                 this.ul = this.el.find('ul');
+              });
+
+              it("should create a list", function() {
+                 expect(this.ul).toExist();
+                 expect(this.ul).toHaveClass("<%= controller_name.downcase %>");
+              });
+
+              it("should create an li for each <%= controller_name.singularize.downcase %>", function() {
+                 var collection = this.view.collection;
+                 var items = this.ul.children('li');
+                 expect(items.length).toEqual(this.view.collection.length)
+                 items.each(function(index) {
+                    expect($(this)).toHaveId('<%= controller_name.singularize.downcase %>_' + collection.at(index).id);
+                 });
+              });
+          });
+       });
+    });
+
+    describe("show", function() {
+        beforeEach(function() {
+            this.fixture = new <%= controller_name.singularize %>(this.fixtures.<%= controller_name %>.valid[0]);
+            this.view = new App.Views.<%= controller_name %>.Show({ model : this.fixture });
+            this.el = $(this.view.el);
+        });
+        
+       describe_<%= controller_name.singularize.downcase %>_list_instantiation(App.ViewHelpers.<%= controller_name.downcase %>.css.show);
+
+       describe("rendering", function() {
+          beforeEach(function() {
+             this.view.render();
+          });
+
+          it("should have a name", function() {
+              var span = this.el.find('span');
+              expect(span).toExist();
+              expect(span).toHaveText(this.fixture.get('name'));
+          });
+
+          describe_<%= controller_name.singularize.downcase %>_edit_delete_links();
+
+       });
+
+       describe("clicking edit", function() {
+            beforeEach(function() {
+               this.get<%= controller_name.singularize %>Stub = sinon.stub(this.view, '_get<%= controller_name.singularize %>').returns(this.fixture);
+               this.fetchStub = sinon.stub(this.fixture, 'fetch');
+            });
+           afterEach(function() {
+              this.get<%= controller_name.singularize %>Stub.restore();
+              this.fetchStub.restore();
+           });
+           describe("success", function() {
+              beforeEach(function() {
+                 var e = jQuery.Event("click");
+                 this.view.model = this.fixture;
+                 this.fetchStub.yieldsTo("success", this.fixture);
+                 sinon.stub(this.view, '_parent').returns(this.helper.find(this.fixture.id))
+                 
+                 this.<%= controller_name.singularize.downcase %>EditView = sinon.stub(App.Views.<%= controller_name %>, "Edit")
+                   .returns(new Backbone.View());
+
+                 this.saveLocStub = sinon.stub(Backbone.history, 'saveLocation'); 
+
+                 this.view.edit(e);
+              });
+              afterEach(function() {
+                  this.view._parent.restore();
+                  this.<%= controller_name.singularize.downcase %>EditView.restore();
+                  this.saveLocStub.restore();
+               });
+
+              it("fetches the <%= controller_name.singularize.downcase %> from the server", function() {
+                  expect_called_once_with(this.fetchStub);
+               });
+
+               it("creates an edit view", function() {
+                  expect_called_once_with(this.<%= controller_name.singularize.downcase %>EditView, { model : this.fixture })
+               });
+
+               it("saves the edit location in the hash", function() {
+                   var url = this.helper.url.edit(this.fixture.id);
+                   expect_called_once_with(this.saveLocStub, url);
+               });
+           });
+
+           describe("fails to fetch", function() {
+              beforeEach(function() {
+                 var e = jQuery.Event("click");
+                 this.view.model = this.fixture;
+                 this.fetchStub.yieldsTo("error", this.fixture);
+
+                 this.view.edit(e);
+              });
+
+              it_should_show_error('Could not find that <%= controller_name.singularize.downcase %>.');
+           });
+       });
+
+       describe("clicking delete", function() {
+            beforeEach(function() {
+               this.get<%= controller_name.singularize %>Stub = sinon.stub(this.view, '_get<%= controller_name.singularize %>').returns(this.fixture);
+               this.destroyStub = sinon.stub(this.fixture, 'destroy');
+               var e = jQuery.Event("click");
+               this.view.destroy(e);
+            });
+           afterEach(function() {
+              this.get<%= controller_name.singularize %>Stub.restore();
+              this.destroyStub.restore();
+           });
+           describe("confirm dialog", function() {
+               beforeEach(function() {
+                    this.dialog = $('.ui-dialog-content');
+               });
+               afterEach(function() {
+                  $('.ui-dialog-content').dialog('destroy');
+               });
+               it("should exist", function(){
+                   expect(this.dialog).toExist();
+               });
+               it("should have text", function() {
+                  expect(this.dialog).toHaveText("Are you sure you want to delete this <%= controller_name.singularize.downcase %>?");
+               });
+               it("should have a delete button", function() {
+                   btn = this.dialog.parent().find('button').first();
+                   expect(btn).toExist();
+                   expect(btn).toHaveText("Delete");
+               });
+               it("should have a cancel button", function() {
+                    btn = this.dialog.parent().find('button').last();
+                   expect(btn).toExist();
+                   expect(btn).toHaveText("Cancel");
+               });
+               describe("cancel", function() {
+                  beforeEach(function() {
+                     this.btn = this.dialog.parent().find('button').last();
+                     this.btn.click();
+                  });
+                  it("should close the dialog", function() {
+                        expect($('.ui-dialog-content')).not.toExist();
+                  });
+                  describe_<%= controller_name.singularize.downcase %>_edit_delete_links();
+               });
+               describe("click delete", function() {
+                   beforeEach(function() {
+                        btn = this.dialog.parent().find('button').first();
+                       
+                       btn.click();
+                   });
+                   describe("success", function() {
+                      beforeEach(function() {
+                         var e = jQuery.Event("click");
+                         this.view.model = this.fixture;
+                         this.destroyStub.yieldsTo("success", this.fixture);
+
+                         loadFixtures("<%= controller_name.singularize.downcase %>.fixture1.html");
+                         this.parent = this.helper.find(this.fixture.id);
+                         sinon.stub(this.view, '_parent').returns(this.parent);
+
+                         spyOnEvent(this.parent, 'remove');
+
+                         this.view.destroy(e);
+                      });
+                      afterEach(function() {
+                          this.view._parent.restore();
+                      });
+
+                      it("destroys the <%= controller_name.singularize.downcase %> from the server", function() {
+                          expect_called_once_with(this.destroyStub);
+                      });
+
+                       //TODO: why aren't these working?
+                      it_should_show_notice('<%= controller_name.singularize %> deleted.');
+
+                      it("should remove parent from DOM", function() {
+                         expect('remove').toHaveBeenTriggeredOn(this.parent);
+                      });
+                   });
+                   describe("failure", function() {
+                     beforeEach(function() {
+                         var e = jQuery.Event("click");
+                         this.view.model = this.fixture;
+                         this.destroyStub.yieldsTo("error", this.fixture);
+
+                         this.view.destroy(e);
+                     });
+
+                     it_should_show_error('Error deleting <%= controller_name.singularize.downcase %>.');
+                   });
+               });
+           });
+       });
+    });
+
+    describe("edit", function() {
+        beforeEach(function() {
+            this.fixture = new <%= controller_name.singularize %>(this.fixtures.<%= controller_name %>.valid[0]);
+            this.view = new App.Views.<%= controller_name %>.Edit({ model : this.fixture });
+            this.el = $(this.view.el);
+        });
+
+        describe_<%= controller_name.singularize.downcase %>_list_instantiation(App.ViewHelpers.<%= controller_name.downcase %>.css.edit);
+
+        describe_<%= controller_name.singularize.downcase %>_edit_form();
+        
+    });
+
+    describe("new", function() {
+        beforeEach(function() {
+            this.view = new App.Views.<%= controller_name %>.Edit({ model : new <%= controller_name.singularize %>() });
+            this.el = $(this.view.el);
+        });
+        afterEach(function() {
+           $('.ui-dialog-content').dialog('destroy');
+        });
+
+        describe_<%= controller_name.singularize.downcase %>_list_instantiation(App.ViewHelpers.<%= controller_name.downcase %>.css.edit);
+
+        describe_<%= controller_name.singularize.downcase %>_edit_form();
+
+    });
+});
