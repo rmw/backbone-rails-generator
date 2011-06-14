@@ -13,7 +13,7 @@ class BackboneGenerator < Rails::Generators::ResourceGenerator #metagenerator
     template 'controller.rb.erb', File.join('app/controllers', class_path, "#{controller_name.underscore}_controller.rb")
   end
 
-  def add_routes
+  def add_resource_route
     content = template_content 'routes.rb.erb'
     route %{#{content}}
   end
