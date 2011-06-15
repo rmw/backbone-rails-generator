@@ -126,7 +126,7 @@ describe("<%= controller_name.downcase %> views", function() {
                });
 
                it("saves the edit location in the hash", function() {
-                   var url = this.helper.url.edit(this.fixture.id);
+                   var url = this.helper.url('edit', this.fixture.id);
                    expect_called_once_with(this.saveLocStub, url);
                });
            });

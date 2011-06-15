@@ -1,7 +1,7 @@
-- var contact = model;
-- var helper = App.ViewHelpers.contacts;
-%span &= contact.get('name')
-%div.contact_links
-  %a(href='#' contact-id=contact.id class=helper.links.edit)Edit
+- var note = model;
+- var helper = App.ViewHelpers.notes;
+%span &= note.get('name')
+%div.note_links
+  %a(href='#' note-id=note.id class=helper.links.edit)Edit
   |
-  %a(href='#' contact-id=contact.id class=helper.links.destroy)Delete
+  %a(href='#' note-id=note.id class=helper.links.destroy)Delete

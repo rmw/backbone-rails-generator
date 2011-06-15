@@ -55,9 +55,9 @@ class BackboneGenerator < Rails::Generators::ResourceGenerator #metagenerator
     template 'backbone_view_helper.spec.js.erb', File.join("spec/javascripts/helpers", class_path, "#{controller_name.singularize}ViewSpecHelper.js")
     #fixtures
     html_fixtures.each do |fixture|
-      template "backbone.#{fixture}.fixture.html.erb", File.join("spec/javascripts/fixtures", class_path, "#{controller_name}.#{fixture}.fixture.html")
+      template "backbone.#{fixture}.fixture.html.erb", File.join("spec/javascripts/fixtures", class_path, "#{controller_name.downcase}.#{fixture}.fixture.html")
     end
-    template "backbone.fixture.js.erb", File.join("spec/javascripts/fixtures", class_path, "#{controller_name}.fixture.js")
+    template "backbone.fixture.js.erb", File.join("spec/javascripts/fixtures", class_path, "#{controller_name.downcase}.fixture.js")
   end
 
   def create_rspec_controller_tests

@@ -1,13 +1,11 @@
-- if(collection.models.length>0){
-- var helper = App.ViewHelpers.contacts;
+- var helper = App.ViewHelpers.<%= controller_name.downcase %>;
 %div#app_sub_header
-  %a(href='#new' class=helper.links.new)Add New Contact
+  %a(href='#new' class=helper.links.new)Add New <%= controller_name.singularize %>
   %div(class=helper.css.new)
-%ul(class=App.ViewHelpers.contacts.css.list)
+%ul(class=App.ViewHelpers.<%= controller_name.downcase %>.css.list)
   - $.each(collection.models, function(index, val) {
-  - var contact = val;
-  - var htmlId = helper.id.tag(contact.id);
+  - var <%= controller_name.singularize.downcase %> = val;
+  - var htmlId = helper.id.tag(<%= controller_name.singularize.downcase %>.id);
   - var cycle = index % 2 ? 'even' : 'odd'
-  %li.contact(id=htmlId class=cycle)
+  %li.<%= controller_name.singularize.downcase %>(id=htmlId class=cycle)
   - });
-- }

@@ -129,7 +129,7 @@ describe("<%= controller_name %> Controller", function() {
                     beforeEach(function() {
                         var id = 1;
                                                 
-                        loadFixtures("<%= controller_name.singularize.downcase %>.fixture1.html");
+                        loadFixtures("<%= controller_name.downcase %>.edit_delete_links.fixture.html");
                         this.fixture = this.viewHelper.find(id);
                         this.editLink = this.fixture.find(this.viewHelper.css.toClass(this.viewHelper.links.edit));
                         spyOnEvent(this.editLink, 'click');
@@ -166,7 +166,7 @@ describe("<%= controller_name %> Controller", function() {
 
             describe("successfully gets <%= controller_name.singularize.downcase %>", function() {
                 beforeEach(function() {
-                    loadFixtures("<%= controller_name.singularize.downcase %>.createnew.fixture.html");
+                    loadFixtures("<%= controller_name.downcase %>.create_new.fixture.html");
                     this.fixture = $(this.viewHelper.css.toClass(this.viewHelper.links['new']));
                     spyOnEvent(this.fixture, 'click');
 

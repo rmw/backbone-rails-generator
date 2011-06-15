@@ -1,12 +1,12 @@
 App.Views.<%= controller_name %>.Index = Backbone.View.extend({
   helper : App.ViewHelpers.<%= controller_name.downcase %>,
   className: App.ViewHelpers.<%= controller_name.downcase %>.css.index,
-  events: App.ViewHelpers.<%= controller_name.downcase %>.getLinkEvents(["click"], ["new"], ["newContact"]),
+  events: App.ViewHelpers.<%= controller_name.downcase %>.getLinkEvents(["click"], ["new"], ["new<%= controller_name.singularize %>"]),
    initialize: function() {
      this.render();
    },
    render: function() {
-     $(this.el).html(JST.<%= controller_name.downcase %>_collection({ collection: this.collection }));
+     $(this.el).html(JST['<%= controller_name.downcase %>/collection']({ collection: this.collection }));
      $('#app_content').html(this.el);
      if(!this._headerRendered) {
         if(this.helper.header == null)
@@ -19,14 +19,14 @@ App.Views.<%= controller_name %>.Index = Backbone.View.extend({
 
      return this;
    },
-   newContact : function(e) {
+   new<%= controller_name.singularize %> : function(e) {
      e.preventDefault();
      e.stopPropagation();
      var self = this;
-     var view = new App.Views.<%= controller_name %>.Edit({ model: new Contact() });
+     var view = new App.Views.<%= controller_name %>.Edit({ model: new <%= controller_name.singularize %>() });
      var el = $(view.render().el);
 
-     Backbone.history.saveLocation(self.helper.url['new']());
+     Backbone.history.saveLocation(self.helper.url('new'));
    },
    _headerRendered : false
 });

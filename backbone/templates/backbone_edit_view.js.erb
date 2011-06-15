@@ -38,7 +38,7 @@ App.Views.<%= controller_name %>.Edit = Backbone.View.extend({
      );
    },
    render: function() {
-       $(this.el).html(JST.<%= controller_name.singularize.downcase %>_form({ model: this.model }));
+       $(this.el).html(JST['<%= controller_name.downcase %>/form']({ model: this.model }));
        Cufon.replace($(this.el).find('button'), { fontFamily : 'Bradbury Sans Light' });
        var isNew = this.model.isNew();
        var self = this;
@@ -65,7 +65,7 @@ App.Views.<%= controller_name %>.Edit = Backbone.View.extend({
    },
    _close: function(model) {
         this.model = model;
-        window.location.hash = this.helper.url.index();
+        window.location.hash = this.helper.url('index');
    },
    _destroyDialog: function(model){
         $(this.el).dialog('destroy');

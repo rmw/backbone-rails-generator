@@ -1,26 +1,26 @@
 class <%= controller_name %>Controller < ApplicationController
   def index
-    render :json => <%= controller_name %>.all
+    render :json => <%= controller_name.singularize %>.all
   end
 
   def show
-    render :json => <%= controller_name %>.find(params[:id])
+    render :json => <%= controller_name.singularize %>.find(params[:id])
   end
 
   def create
-    <%= controller_name.downcase.pluralize %> = <%= controller_name %>.create! params
-    render :json => <%= controller_name.downcase.pluralize %>
+    <%= controller_name.downcase %> = <%= controller_name.singularize %>.create! params
+    render :json => <%= controller_name.downcase %>
   end
 
   def update
-    <%= controller_name.downcase.pluralize %> =  <%= controller_name %>.find(params[:id])
-    <%= controller_name.downcase.pluralize %>.update_attributes! params
-    render :json => <%= controller_name.downcase.pluralize %>
+    <%= controller_name.downcase %> =  <%= controller_name.singularize %>.find(params[:id])
+    <%= controller_name.downcase %>.update_attributes! params
+    render :json => <%= controller_name.downcase %>
   end
 
   def destroy
-    <%= controller_name.downcase.pluralize %> =  <%= controller_name %>.find(params[:id])
-    <%= controller_name.downcase.pluralize %>.destroy
-    render :json => <%= controller_name.downcase.pluralize %>
+    <%= controller_name.downcase %> =  <%= controller_name.singularize %>.find(params[:id])
+    <%= controller_name.downcase %>.destroy
+    render :json => <%= controller_name.downcase %>
   end
 end

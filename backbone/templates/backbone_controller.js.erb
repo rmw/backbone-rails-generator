@@ -8,7 +8,7 @@ App.Controllers.<%= controller_name %>Controller = Backbone.Controller.extend({
                 self.helper.find(id).find(self.helper.css.toClass(self.helper.links.edit)).trigger('click');
             },
             error : function() {
-               new App.Views.Error({ message: 'Could not find that <%= controller_name.downcase %>.'});
+               new App.Views.Error({ message: 'Could not find that <%= controller_name.singularize.downcase %>.'});
             }
         });
     },

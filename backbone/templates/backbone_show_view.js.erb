@@ -8,7 +8,7 @@ App.Views.<%= controller_name %>.Show = Backbone.View.extend({
        this.render();
     },
     render: function() {
-        $(this.el).html(JST.<%= controller_name.singularize.downcase %>_show({ model: this.model }));
+        $(this.el).html(JST['<%= controller_name.downcase %>/show']({ model: this.model }));
         this._parent().html(this.el);
         this._parent().attr(this.helper.id.attribute, this.model.id);
         this._parent().removeClass('open')
@@ -30,7 +30,7 @@ App.Views.<%= controller_name %>.Show = Backbone.View.extend({
            var view = new App.Views.<%= controller_name %>.Edit({ model: model });
            $(view.render().el).appendTo(self._parent());
 
-           Backbone.history.saveLocation(self.helper.url.edit(model.id));
+           Backbone.history.saveLocation(self.helper.url('edit', model.id));
        },
        error: function() {
            new App.Views.Error({ message: 'Could not find that <%= controller_name.singularize.downcase %>.'});
@@ -70,7 +70,7 @@ App.Views.<%= controller_name %>.Show = Backbone.View.extend({
    },
    _get<%= controller_name.singularize %> : function(e) {
      var modelId = this.helper.getId(e.target);
-     var <%= controller_name.singularize.downcase %> = new Contact({ id: modelId });
+     var <%= controller_name.singularize.downcase %> = new <%= controller_name.singularize %>({ id: modelId });
      return <%= controller_name.singularize.downcase %>;
    }
 });
